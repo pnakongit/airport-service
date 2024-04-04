@@ -65,3 +65,13 @@ class Route(models.Model):
 
     def __str__(self) -> str:
         return f"{self.id}. {self.source.name} - {self.destination.name}"
+
+
+class AirplaneType(models.Model):
+    name = models.CharField(max_length=25)
+
+    class Meta:
+        ordering = ["name"]
+
+    def __str__(self) -> str:
+        return self.name
