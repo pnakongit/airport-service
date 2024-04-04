@@ -1,4 +1,5 @@
 from django.db import models
+from django.db.models import Q, F
 
 
 class Country(models.Model):
@@ -37,3 +38,30 @@ class Airport(models.Model):
 
     def __str__(self) -> str:
         return self.name
+
+
+class Route(models.Model):
+    source = models.ForeignKey(
+        Airport,
+        on_delete=models.CASCADE,
+        related_name="source_routes"
+    )
+    destination = models.ForeignKey(
+        Airport,
+        on_delete=models.CASCADE,
+        related_name="destination_routes"
+    )
+    distance = models.PositiveIntegerField()
+
+    class Meta:
+        ordering = ["id"]
+        constraints = [
+            models.CheckConstraint(
+                check=~Q(source=F("destination")),
+                name="source_destination_not_equal",
+                violation_error_message="The source and the destination can't be the same."
+            )
+        ]
+
+    def __str__(self) -> str:
+        return f"{self.id}. {self.source.name} - {self.destination.name}"
