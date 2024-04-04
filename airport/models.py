@@ -75,3 +75,20 @@ class AirplaneType(models.Model):
 
     def __str__(self) -> str:
         return self.name
+
+
+class Airplane(models.Model):
+    name = models.CharField(max_length=25, unique=True)
+    rows = models.PositiveIntegerField()
+    seat_in_row = models.PositiveIntegerField()
+    airplane_type = models.ForeignKey(
+        AirplaneType,
+        on_delete=models.CASCADE,
+        related_name="airplanes"
+    )
+
+    class Meta:
+        ordering = ["name"]
+
+    def __str__(self) -> str:
+        return self.name
