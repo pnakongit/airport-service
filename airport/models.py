@@ -92,3 +92,14 @@ class Airplane(models.Model):
 
     def __str__(self) -> str:
         return self.name
+
+
+class Crew(models.Model):
+    first_name = models.CharField(max_length=35)
+    last_name = models.CharField(max_length=35)
+
+    def __str__(self) -> str:
+        return self.get_full_name()
+
+    def get_full_name(self) -> str:
+        return f"{self.first_name} {self.last_name}"
