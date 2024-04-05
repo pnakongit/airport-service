@@ -25,6 +25,7 @@ class City(models.Model):
 
     class Meta:
         ordering = ["name"]
+        verbose_name_plural = "cities"
 
     def __str__(self) -> str:
         return self.name
