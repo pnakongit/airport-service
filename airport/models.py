@@ -30,7 +30,7 @@ class City(models.Model):
 
 
 class Airport(models.Model):
-    name = models.CharField(max_length=25)
+    name = models.CharField(max_length=25, unique=True)
     closest_big_city = models.ForeignKey(
         City,
         on_delete=models.SET_NULL,
