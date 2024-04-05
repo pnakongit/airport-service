@@ -9,6 +9,7 @@ class Country(models.Model):
 
     class Meta:
         ordering = ["name"]
+        verbose_name_plural = "countries"
 
     def __str__(self) -> str:
         return self.name
