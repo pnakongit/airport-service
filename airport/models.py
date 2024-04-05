@@ -1,3 +1,4 @@
+from django.contrib.auth import get_user_model
 from django.db import models
 from django.db.models import Q, F
 
@@ -142,3 +143,17 @@ class Flight(models.Model):
     def __str__(self) -> str:
         return f"{self.route} | {self.departure_time}"
 
+
+class Order(models.Model):
+    created_at = models.DateTimeField(auto_now_add=True)
+    user = models.ForeignKey(
+        get_user_model(),
+        on_delete=models.CASCADE,
+        related_name="orders"
+    )
+
+    class Meta:
+        ordering = ["-created_at"]
+
+    def __str__(self) -> str:
+        return f"{self.id}. {self.created_at}"
