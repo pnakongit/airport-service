@@ -5,7 +5,7 @@ from django.db.models import Q, F
 
 
 class Country(models.Model):
-    name = models.CharField(max_length=25)
+    name = models.CharField(max_length=25, unique=True)
 
     class Meta:
         ordering = ["name"]
