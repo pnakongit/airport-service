@@ -103,3 +103,42 @@ class Crew(models.Model):
 
     def get_full_name(self) -> str:
         return f"{self.first_name} {self.last_name}"
+
+
+class Flight(models.Model):
+    route = models.ForeignKey(
+        Route,
+        on_delete=models.CASCADE,
+        related_name="flights"
+    )
+    crew = models.ForeignKey(
+        Crew,
+        on_delete=models.SET_NULL,
+        null=True,
+        related_name="flights"
+    )
+    airplane = models.ForeignKey(
+        Airplane,
+        on_delete=models.SET_NULL,
+        null=True,
+        related_name="flights"
+    )
+    departure_time = models.DateTimeField()
+    arrival_time = models.DateTimeField()
+
+    class Meta:
+        ordering = ["-departure_time"]
+        constraints = [
+            models.CheckConstraint(
+                check=Q(arrival_time__gt=F("departure_time")),
+                name="arrival_time_greater_than_departure_time"
+            ),
+            models.UniqueConstraint(
+                fields=["route", "airplane", "departure_time"],
+                name="unique_route_airplane_departure_time"
+            )
+        ]
+
+    def __str__(self) -> str:
+        return f"{self.route} | {self.departure_time}"
+
