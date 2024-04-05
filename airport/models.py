@@ -1,4 +1,5 @@
 from django.contrib.auth import get_user_model
+from django.core.exceptions import ValidationError
 from django.db import models
 from django.db.models import Q, F
 
@@ -157,3 +158,62 @@ class Order(models.Model):
 
     def __str__(self) -> str:
         return f"{self.id}. {self.created_at}"
+
+
+class Ticket(models.Model):
+    row = models.PositiveIntegerField()
+    seat = models.PositiveIntegerField()
+    flight = models.ForeignKey(
+        Flight,
+        on_delete=models.CASCADE,
+        related_name="tickets"
+    )
+    order = models.ForeignKey(
+        Order,
+        on_delete=models.CASCADE,
+        related_name="tickets"
+    )
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=("row", "seat", "flight"),
+                name="unique_row_seat_flight"
+            )
+        ]
+
+    def __str__(self) -> str:
+        return f"Flight ID:{self.flight_id}. Seat; {self.seat}. Row; {self.row}"
+
+    @staticmethod
+    def validate_seat_and_row(
+            seat: int,
+            row: int,
+            flight: Flight,
+            error_to_raise
+    ) -> None:
+        attrs = (
+            (row, "row", "rows"),
+            (seat, "seat", "seat_in_row")
+        )
+        errors = {}
+        for attr_value, attr_name, airplane_attr_name in attrs:
+            airplane_attr_value = getattr(flight.airplane, airplane_attr_name)
+
+            if not (0 < attr_value <= airplane_attr_value):
+                errors.update(
+                    {
+                        attr_name: f"{attr_name.title()} must be in available range:"
+                                   f"(1, {airplane_attr_value})"
+                    }
+                )
+        if errors:
+            raise error_to_raise(errors)
+
+    def clean(self) -> None:
+        self.validate_seat_and_row(
+            self.seat,
+            self.row,
+            self.flight,
+            ValidationError
+        )
