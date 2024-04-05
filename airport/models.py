@@ -15,8 +15,12 @@ class Country(models.Model):
 
 
 class City(models.Model):
-    name = models.CharField(max_length=25)
-    country = models.ForeignKey(Country, on_delete=models.CASCADE, related_name="cities")
+    name = models.CharField(max_length=25, unique=True)
+    country = models.ForeignKey(
+        Country,
+        on_delete=models.CASCADE,
+        related_name="cities"
+    )
 
     class Meta:
         ordering = ["name"]
