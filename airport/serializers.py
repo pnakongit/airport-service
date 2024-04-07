@@ -1,6 +1,10 @@
 from rest_framework import serializers
 
-from airport.models import Country, City
+from airport.models import (
+    Country,
+    City,
+    Airport
+)
 
 
 class CountrySerializer(serializers.ModelSerializer):
@@ -21,3 +25,16 @@ class CityListDetailSerializer(serializers.ModelSerializer):
     class Meta:
         model = City
         fields = ("id", "name", "country")
+
+
+class AirportSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Airport
+        fields = ("id", "name", "closest_big_city")
+
+        extra_kwargs = {
+            "closest_big_city": {
+                "required": True,
+                "allow_null": False
+            }
+        }
