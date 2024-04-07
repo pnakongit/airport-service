@@ -82,3 +82,13 @@ class CrewSerializer(serializers.ModelSerializer):
     class Meta:
         model = Crew
         fields = ("id", "first_name", "last_name", "full_name")
+
+
+class FlightShortListSerializer(serializers.Serializer):
+    flight = serializers.CharField(read_only=True, source="route")
+
+    def create(self, validated_data: dict) -> None:
+        pass
+
+    def update(self, instance, validated_data: dict) -> None:
+        pass
