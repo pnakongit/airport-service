@@ -1,9 +1,12 @@
 from rest_framework import serializers
+from rest_framework.exceptions import ValidationError
+from rest_framework.validators import UniqueTogetherValidator
 
 from airport.models import (
     Country,
     City,
-    Airport
+    Airport,
+    Route
 )
 
 
@@ -41,3 +44,28 @@ class AirportListDetailSerializer(AirportSerializer):
         read_only=True,
         slug_field="name"
     )
+
+
+class RouteSerializer(serializers.ModelSerializer):
+
+    def validate(self, attrs: dict) -> dict:
+        source = attrs.get("source") or self.instance.source
+        destination = attrs.get("destination") or self.instance.detination
+        if source == destination:
+            raise ValidationError(
+                {
+                    "non_field_errors": "The source and the destination can't be the same."
+                }
+            )
+        return attrs
+
+    class Meta:
+        model = Route
+        fields = ("id", "source", "destination", "distance")
+
+        validator = [
+            UniqueTogetherValidator(
+                queryset=Route.objects.all(),
+                fields=["source", "destination"]
+            )
+        ]
