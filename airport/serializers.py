@@ -6,7 +6,9 @@ from airport.models import (
     Country,
     City,
     Airport,
-    Route, Crew
+    Route,
+    Crew,
+    Flight
 )
 
 
@@ -92,3 +94,36 @@ class FlightShortListSerializer(serializers.Serializer):
 
     def update(self, instance, validated_data: dict) -> None:
         pass
+
+
+class FlightSerializer(serializers.ModelSerializer):
+
+    def validate(self, data: dict) -> dict:
+        departure_time = data.get("departure_time") or self.instance.departure_time
+        arrival_time = data.get("arrival_time") or self.instance.arrival_time
+
+        if arrival_time <= departure_time:
+            raise ValidationError(
+                {
+                    "non_field_errors": "Arrival_time should be greater than Departure_time"
+                }
+            )
+        return data
+
+    class Meta:
+        model = Flight
+        fields = (
+            "id",
+            "route",
+            "crew",
+            "airplane",
+            "departure_time",
+            "arrival_time"
+        )
+
+        validators = [
+            UniqueTogetherValidator(
+                queryset=Flight.objects.all(),
+                fields=["route", "airplane", "departure_time"]
+            )
+        ]
