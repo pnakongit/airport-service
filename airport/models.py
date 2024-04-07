@@ -68,6 +68,10 @@ class Route(models.Model):
                 check=~Q(source=F("destination")),
                 name="source_destination_not_equal",
                 violation_error_message="The source and the destination can't be the same."
+            ),
+            models.UniqueConstraint(
+                fields=("source", "destination"),
+                name="unique_source_destination"
             )
         ]
 
