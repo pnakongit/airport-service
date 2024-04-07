@@ -123,10 +123,8 @@ class Flight(models.Model):
         on_delete=models.CASCADE,
         related_name="flights"
     )
-    crew = models.ForeignKey(
+    crew = models.ManyToManyField(
         Crew,
-        on_delete=models.SET_NULL,
-        null=True,
         related_name="flights"
     )
     airplane = models.ForeignKey(
