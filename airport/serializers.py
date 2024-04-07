@@ -38,3 +38,10 @@ class AirportSerializer(serializers.ModelSerializer):
                 "allow_null": False
             }
         }
+
+
+class AirportListDetailSerializer(AirportSerializer):
+    closest_big_city = serializers.SlugRelatedField(
+        read_only=True,
+        slug_field="name"
+    )
