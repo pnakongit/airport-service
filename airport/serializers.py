@@ -69,3 +69,8 @@ class RouteSerializer(serializers.ModelSerializer):
                 fields=["source", "destination"]
             )
         ]
+
+
+class RouteListSerializer(RouteSerializer):
+    source = serializers.SlugRelatedField(slug_field="name", read_only=True)
+    destination = serializers.SlugRelatedField(slug_field="name", read_only=True)
