@@ -1,10 +1,19 @@
 from typing import Type
 
 from django.db.models import QuerySet
-from rest_framework import viewsets
+from rest_framework import viewsets, status
+from rest_framework.decorators import action
+from rest_framework.request import Request
+from rest_framework.response import Response
 from rest_framework.serializers import Serializer
 
-from airport.models import Country, City, Airport, Route
+from airport.models import (
+    Country,
+    City,
+    Airport,
+    Route,
+    Crew,
+)
 from airport.serializers import (
     CountrySerializer,
     CitySerializer,
@@ -12,7 +21,9 @@ from airport.serializers import (
     AirportSerializer,
     AirportListDetailSerializer,
     RouteSerializer,
-    RouteListSerializer
+    RouteListSerializer,
+    CrewSerializer,
+    FlightShortListSerializer
 )
 
 
@@ -66,3 +77,27 @@ class RouteViewSet(viewsets.ModelViewSet):
         if self.action in ["list"]:
             return RouteListSerializer
         return super().get_serializer_class()
+
+
+class CrewViewSet(viewsets.ModelViewSet):
+    queryset = Crew.objects.all()
+    serializer_class = CrewSerializer
+
+    def get_serializer_class(self) -> Type[Serializer]:
+        if self.action == "flight_short_list":
+            return FlightShortListSerializer
+        return super().get_serializer_class()
+
+    @action(
+        methods=["get"],
+        detail=True,
+        url_path="flights",
+        url_name="flight_short_list"
+    )
+    def flight_short_list(self, request: Request, pk=None) -> Response:
+        """Endpoint returns a list of flights for the specific crew"""
+
+        crew = self.get_object()
+        flight_qs = crew.flights.all()
+        serializer = self.get_serializer(flight_qs, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
