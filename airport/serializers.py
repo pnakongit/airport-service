@@ -6,7 +6,7 @@ from airport.models import (
     Country,
     City,
     Airport,
-    Route
+    Route, Crew
 )
 
 
@@ -74,3 +74,11 @@ class RouteSerializer(serializers.ModelSerializer):
 class RouteListSerializer(RouteSerializer):
     source = serializers.SlugRelatedField(slug_field="name", read_only=True)
     destination = serializers.SlugRelatedField(slug_field="name", read_only=True)
+
+
+class CrewSerializer(serializers.ModelSerializer):
+    full_name = serializers.ReadOnlyField(source="get_full_name")
+
+    class Meta:
+        model = Crew
+        fields = ("id", "first_name", "last_name", "full_name")
