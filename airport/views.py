@@ -13,7 +13,8 @@ from airport.models import (
     Airport,
     Route,
     Crew,
-    Flight
+    Flight,
+    AirplaneType
 )
 from airport.serializers import (
     CountrySerializer,
@@ -27,7 +28,8 @@ from airport.serializers import (
     FlightShortListSerializer,
     FlightSerializer,
     FlightDetailSerializer,
-    FlightListSerializer
+    FlightListSerializer,
+    AirplaneTypeSerializer
 )
 
 
@@ -137,3 +139,8 @@ class FlightViewSet(viewsets.ReadOnlyModelViewSet):
                                   ) - Count("tickets")
             )
         return flight_qs
+
+
+class AirplaneTypeViewSet(viewsets.ModelViewSet):
+    serializer_class = AirplaneTypeSerializer
+    queryset = AirplaneType.objects.all()
