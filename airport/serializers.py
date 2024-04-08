@@ -127,3 +127,9 @@ class FlightSerializer(serializers.ModelSerializer):
                 fields=["route", "airplane", "departure_time"]
             )
         ]
+
+
+class FlightDetailSerializer(FlightSerializer):
+    route = serializers.StringRelatedField()
+    crews = serializers.StringRelatedField(many=True)
+    airplane = serializers.StringRelatedField()
