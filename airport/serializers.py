@@ -1,3 +1,4 @@
+from django.db import transaction
 from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
 from rest_framework.validators import UniqueTogetherValidator
@@ -10,7 +11,9 @@ from airport.models import (
     Crew,
     Flight,
     AirplaneType,
-    Airplane
+    Airplane,
+    Ticket,
+    Order
 )
 
 
@@ -178,3 +181,25 @@ class AirplaneImageSerializer(serializers.ModelSerializer):
     class Meta:
         model = Airplane
         fields = ("id", "image")
+
+
+class TicketSerializer(serializers.ModelSerializer):
+
+    def validate(self, data: dict) -> dict:
+        Ticket.validate_seat_and_row(
+            data.get("seat"),
+            data.get("row"),
+            data.get("flight"),
+            ValidationError
+        )
+        return data
+
+    class Meta:
+        model = Ticket
+        fields = ("id", "seat", "row", "flight", "order")
+        extra_kwargs = {
+            "order": {
+                "allow_null": True,
+                "required": False
+            }
+        }
