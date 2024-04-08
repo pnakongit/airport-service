@@ -123,7 +123,7 @@ class Flight(models.Model):
         on_delete=models.CASCADE,
         related_name="flights"
     )
-    crew = models.ManyToManyField(
+    crews = models.ManyToManyField(
         Crew,
         related_name="flights"
     )
