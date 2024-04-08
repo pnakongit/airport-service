@@ -3,6 +3,8 @@ from django.core.exceptions import ValidationError
 from django.db import models
 from django.db.models import Q, F
 
+from airport.helpers import airplane_image_file_path
+
 
 class Country(models.Model):
     name = models.CharField(max_length=25, unique=True)
@@ -97,6 +99,11 @@ class Airplane(models.Model):
         AirplaneType,
         on_delete=models.CASCADE,
         related_name="airplanes"
+    )
+    image = models.ImageField(
+        upload_to=airplane_image_file_path,
+        null=True,
+        blank=True
     )
 
     class Meta:
