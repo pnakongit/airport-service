@@ -112,6 +112,10 @@ class Airplane(models.Model):
     def __str__(self) -> str:
         return self.name
 
+    @property
+    def capacity(self) -> int:
+        return self.rows * self.seat_in_row
+
 
 class Crew(models.Model):
     first_name = models.CharField(max_length=35)
