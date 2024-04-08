@@ -205,6 +205,12 @@ class TicketSerializer(serializers.ModelSerializer):
         }
 
 
+class OrderSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Order
+        fields = ("id", "created_at", "user", "tickets")
+
+
 class OrderCreateSerializer(serializers.ModelSerializer):
     tickets = TicketSerializer(many=True, required=False)
 
