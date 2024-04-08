@@ -203,3 +203,20 @@ class TicketSerializer(serializers.ModelSerializer):
                 "required": False
             }
         }
+
+
+class OrderCreateSerializer(serializers.ModelSerializer):
+    tickets = TicketSerializer(many=True, required=False)
+
+    class Meta:
+        model = Order
+        fields = ("id", "created_at", "user", "tickets")
+
+    def create(self, validated_data: dict) -> Order:
+        with transaction.atomic():
+            tickets_data = validated_data.pop("tickets", None)
+            order = Order.objects.create(**validated_data)
+            if tickets_data:
+                for ticket in tickets_data:
+                    Ticket.objects.create(order=order, **ticket)
+            return order
