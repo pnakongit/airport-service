@@ -1,6 +1,6 @@
 from typing import Type
 
-from django.db.models import QuerySet
+from django.db.models import QuerySet, F, Count
 from rest_framework import viewsets, status
 from rest_framework.decorators import action
 from rest_framework.request import Request
@@ -13,6 +13,7 @@ from airport.models import (
     Airport,
     Route,
     Crew,
+    Flight
 )
 from airport.serializers import (
     CountrySerializer,
@@ -23,7 +24,10 @@ from airport.serializers import (
     RouteSerializer,
     RouteListSerializer,
     CrewSerializer,
-    FlightShortListSerializer
+    FlightShortListSerializer,
+    FlightSerializer,
+    FlightDetailSerializer,
+    FlightListSerializer
 )
 
 
@@ -101,3 +105,35 @@ class CrewViewSet(viewsets.ModelViewSet):
         flight_qs = crew.flights.all()
         serializer = self.get_serializer(flight_qs, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+class FlightViewSet(viewsets.ReadOnlyModelViewSet):
+    queryset = Flight.objects.all()
+    serializer_class = FlightSerializer
+
+    def get_serializer_class(self) -> Type[Serializer]:
+        if self.action == "retrieve":
+            return FlightDetailSerializer
+
+        if self.action == "list":
+            return FlightListSerializer
+        return super().get_serializer_class()
+
+    def get_queryset(self) -> QuerySet:
+        flight_qs = super().get_queryset()
+        if self.action in ["retrieve", "list"]:
+            flight_qs = flight_qs.select_related(
+                "airplane",
+                "route__source",
+                "route__destination"
+            ).prefetch_related(
+                "crews"
+            )
+        if self.action == "list":
+            flight_qs = flight_qs.annotate(
+                available_tickets=(
+                                          F("airplane__rows") *
+                                          F("airplane__seat_in_row")
+                                  ) - Count("tickets")
+            )
+        return flight_qs
