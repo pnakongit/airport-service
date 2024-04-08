@@ -8,7 +8,8 @@ from airport.models import (
     Airport,
     Route,
     Crew,
-    Flight
+    Flight,
+    AirplaneType
 )
 
 
@@ -149,3 +150,9 @@ class FlightListSerializer(FlightDetailSerializer):
             "arrival_time",
             "available_tickets"
         )
+
+
+class AirplaneTypeSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = AirplaneType
+        fields = ("id", "name")
