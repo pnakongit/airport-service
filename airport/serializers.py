@@ -9,7 +9,8 @@ from airport.models import (
     Route,
     Crew,
     Flight,
-    AirplaneType
+    AirplaneType,
+    Airplane
 )
 
 
@@ -156,3 +157,18 @@ class AirplaneTypeSerializer(serializers.ModelSerializer):
     class Meta:
         model = AirplaneType
         fields = ("id", "name")
+
+
+class AirplaneSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Airplane
+        fields = (
+            "id",
+            "name",
+            "rows",
+            "seat_in_row",
+            "image",
+            "capacity",
+            "airplane_type"
+        )
+        read_only_fields = ("image",)
