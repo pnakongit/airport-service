@@ -14,6 +14,7 @@ from airport.models import (
     Route,
     Crew,
     Flight,
+    Airplane,
     AirplaneType
 )
 from airport.serializers import (
@@ -29,7 +30,9 @@ from airport.serializers import (
     FlightSerializer,
     FlightDetailSerializer,
     FlightListSerializer,
-    AirplaneTypeSerializer
+    AirplaneTypeSerializer,
+    AirplaneSerializer,
+    AirplaneImageSerializer
 )
 
 
@@ -144,3 +147,27 @@ class FlightViewSet(viewsets.ReadOnlyModelViewSet):
 class AirplaneTypeViewSet(viewsets.ModelViewSet):
     serializer_class = AirplaneTypeSerializer
     queryset = AirplaneType.objects.all()
+
+
+class AirplaneViewSet(viewsets.ModelViewSet):
+    serializer_class = AirplaneSerializer
+    queryset = Airplane.objects.all()
+
+    def get_serializer_class(self) -> Type[Serializer]:
+        if self.action == "upload_image":
+            return AirplaneImageSerializer
+        return super().get_serializer_class()
+
+    @action(
+        methods=["post"],
+        detail=True,
+        url_path="upload-image",
+        url_name="upload_image"
+    )
+    def upload_image(self, request: Request, pk: int = None) -> Response:
+        """Endpoint for uploading image to specific airplane"""
+        airplane = self.get_object()
+        serializer = self.get_serializer(airplane, data=self.request.data)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response(serializer.data, status=status.HTTP_200_OK)
