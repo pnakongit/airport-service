@@ -172,3 +172,9 @@ class AirplaneSerializer(serializers.ModelSerializer):
             "airplane_type"
         )
         read_only_fields = ("image",)
+
+
+class AirplaneImageSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Airplane
+        fields = ("id", "image")
