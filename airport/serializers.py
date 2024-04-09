@@ -197,12 +197,7 @@ class TicketSerializer(serializers.ModelSerializer):
     class Meta:
         model = Ticket
         fields = ("id", "seat", "row", "flight", "order")
-        extra_kwargs = {
-            "order": {
-                "allow_null": True,
-                "required": False
-            }
-        }
+        read_only_fields = ("order", )
 
 
 class OrderSerializer(serializers.ModelSerializer):
