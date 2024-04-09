@@ -16,7 +16,8 @@ from airport.models import (
     Flight,
     Airplane,
     AirplaneType,
-    Order, Ticket
+    Order,
+    Ticket
 )
 from airport.serializers import (
     CountrySerializer,
@@ -36,7 +37,8 @@ from airport.serializers import (
     AirplaneImageSerializer,
     OrderCreateSerializer,
     OrderSerializer,
-    OrderListDetailSerializer
+    OrderListDetailSerializer,
+    TicketSerializer
 )
 
 
@@ -187,3 +189,22 @@ class OrderViewSet(viewsets.ModelViewSet):
         if self.action == "create":
             return OrderCreateSerializer
         return super().get_serializer_class()
+
+
+class TicketNestedViewSet(viewsets.ModelViewSet):
+    serializer_class = TicketSerializer
+    queryset = Ticket.objects.all()
+
+    def get_queryset(self) -> QuerySet:
+        return super().get_queryset().filter(
+            order=self.kwargs["order_pk"]
+        )
+
+    def _get_order(self) -> Order:
+        return Order.objects.get(pk=self.kwargs["order_pk"])
+
+    def perform_create(self, serializer: TicketSerializer) -> None:
+        serializer.save(order=self._get_order())
+
+    def perform_update(self, serializer: TicketSerializer) -> None:
+        serializer.save(order=self._get_order())
