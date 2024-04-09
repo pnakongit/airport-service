@@ -1,12 +1,14 @@
 from typing import Type
 
-from django.db.models import QuerySet, F, Count
+from django.db.models import QuerySet, F, Count, Q
+from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import viewsets, status
 from rest_framework.decorators import action
 from rest_framework.request import Request
 from rest_framework.response import Response
 from rest_framework.serializers import Serializer
 
+from airport.filters import FlightFilter
 from airport.models import (
     Country,
     City,
@@ -121,6 +123,8 @@ class CrewViewSet(viewsets.ModelViewSet):
 class FlightViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = Flight.objects.all()
     serializer_class = FlightSerializer
+    filter_backends = [DjangoFilterBackend]
+    filterset_class = FlightFilter
 
     def get_serializer_class(self) -> Type[Serializer]:
         if self.action == "retrieve":
