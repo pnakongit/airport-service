@@ -15,7 +15,8 @@ from airport.models import (
     Crew,
     Flight,
     Airplane,
-    AirplaneType
+    AirplaneType,
+    Order, Ticket
 )
 from airport.serializers import (
     CountrySerializer,
@@ -32,7 +33,10 @@ from airport.serializers import (
     FlightListSerializer,
     AirplaneTypeSerializer,
     AirplaneSerializer,
-    AirplaneImageSerializer
+    AirplaneImageSerializer,
+    OrderCreateSerializer,
+    OrderSerializer,
+    OrderListDetailSerializer
 )
 
 
@@ -171,3 +175,15 @@ class AirplaneViewSet(viewsets.ModelViewSet):
         serializer.is_valid(raise_exception=True)
         serializer.save()
         return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+class OrderViewSet(viewsets.ModelViewSet):
+    serializer_class = OrderSerializer
+    queryset = Order.objects.all().prefetch_related("tickets", "user")
+
+    def get_serializer_class(self) -> Type[Serializer]:
+        if self.action in ["list", "retrieve"]:
+            return OrderListDetailSerializer
+        if self.action == "create":
+            return OrderCreateSerializer
+        return super().get_serializer_class()
