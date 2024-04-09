@@ -222,3 +222,8 @@ class OrderCreateSerializer(OrderSerializer):
                 for ticket in tickets_data:
                     Ticket.objects.create(order=order, **ticket)
             return order
+
+
+class OrderListDetailSerializer(OrderSerializer):
+    user = serializers.StringRelatedField()
+    tickets = serializers.StringRelatedField(many=True)
