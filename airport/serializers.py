@@ -197,13 +197,14 @@ class TicketSerializer(serializers.ModelSerializer):
     class Meta:
         model = Ticket
         fields = ("id", "seat", "row", "flight", "order")
-        read_only_fields = ("order", )
+        read_only_fields = ("order",)
 
 
 class OrderSerializer(serializers.ModelSerializer):
     class Meta:
         model = Order
         fields = ("id", "created_at", "user", "tickets")
+        read_only_fields = ("user",)
 
 
 class OrderCreateSerializer(OrderSerializer):
