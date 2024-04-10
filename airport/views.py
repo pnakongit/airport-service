@@ -204,6 +204,12 @@ class OrderViewSet(viewsets.ModelViewSet):
             user=self.request.user
         )
 
+    def perform_create(self, serializer: OrderCreateSerializer) -> None:
+        serializer.save(user=self.request.user)
+
+    def perform_update(self, serializer: OrderCreateSerializer) -> None:
+        serializer.save(user=self.request.user)
+
 
 class TicketNestedViewSet(viewsets.ModelViewSet):
     serializer_class = TicketSerializer
