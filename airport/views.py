@@ -218,7 +218,8 @@ class TicketNestedViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self) -> QuerySet:
         return super().get_queryset().filter(
-            order=self.kwargs["order_pk"]
+            order=self.kwargs["order_pk"],
+            order__user=self.request.user
         )
 
     def _get_order(self) -> Order:
