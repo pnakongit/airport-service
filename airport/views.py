@@ -21,6 +21,7 @@ from airport.models import (
     Order,
     Ticket
 )
+from airport.permissions import IsAuthenticatedReadOnlyOrIsAdmin
 from airport.serializers import (
     CountrySerializer,
     CitySerializer,
@@ -83,6 +84,7 @@ class AirportViewSet(viewsets.ModelViewSet):
 class RouteViewSet(viewsets.ModelViewSet):
     queryset = Route.objects.all()
     serializer_class = RouteSerializer
+    permission_classes = (IsAuthenticatedReadOnlyOrIsAdmin,)
 
     def get_queryset(self) -> QuerySet:
         route_qs = super().get_queryset()
