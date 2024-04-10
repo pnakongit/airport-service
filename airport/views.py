@@ -4,6 +4,7 @@ from django.db.models import QuerySet, F, Count, Q
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import viewsets, status
 from rest_framework.decorators import action
+from rest_framework.generics import get_object_or_404
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.request import Request
 from rest_framework.response import Response
@@ -223,7 +224,10 @@ class TicketNestedViewSet(viewsets.ModelViewSet):
         )
 
     def _get_order(self) -> Order:
-        return Order.objects.get(pk=self.kwargs["order_pk"])
+        return get_object_or_404(
+            Order, pk=self.kwargs["order_pk"],
+            user=self.request.user
+        )
 
     def perform_create(self, serializer: TicketSerializer) -> None:
         serializer.save(order=self._get_order())
