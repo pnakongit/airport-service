@@ -199,6 +199,11 @@ class OrderViewSet(viewsets.ModelViewSet):
             return OrderCreateSerializer
         return super().get_serializer_class()
 
+    def get_queryset(self) -> QuerySet:
+        return super().get_queryset().filter(
+            user=self.request.user
+        )
+
 
 class TicketNestedViewSet(viewsets.ModelViewSet):
     serializer_class = TicketSerializer
