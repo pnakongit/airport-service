@@ -189,6 +189,7 @@ class AirplaneViewSet(viewsets.ModelViewSet):
 class OrderViewSet(viewsets.ModelViewSet):
     serializer_class = OrderSerializer
     queryset = Order.objects.all().prefetch_related("tickets", "user")
+    permission_classes = (IsAuthenticatedReadOnlyOrIsAdmin,)
 
     def get_serializer_class(self) -> Type[Serializer]:
         if self.action in ["list", "retrieve"]:
