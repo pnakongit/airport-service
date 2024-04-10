@@ -202,6 +202,7 @@ class OrderViewSet(viewsets.ModelViewSet):
 class TicketNestedViewSet(viewsets.ModelViewSet):
     serializer_class = TicketSerializer
     queryset = Ticket.objects.all()
+    permission_classes = (IsAuthenticatedReadOnlyOrIsAdmin,)
 
     def get_queryset(self) -> QuerySet:
         return super().get_queryset().filter(
