@@ -76,6 +76,7 @@ class AirportViewSet(viewsets.ModelViewSet):
         airport_qs = super().get_queryset()
         if self.action == "list":
             return airport_qs.select_related("closest_big_city")
+        return airport_qs
 
     def get_serializer_class(self) -> Type[Serializer]:
         if self.action in ["list", "retrieve"]:
