@@ -38,3 +38,31 @@ class UnAuthenticatedCountryApiTest(TestCase):
     def test_city_delete_auth_required(self) -> None:
         response = self.client.delete(self.detail_url)
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+
+
+class AuthenticatedCityApiTest(TestCase):
+
+    def setUp(self) -> None:
+        city = sample_city()
+        self.detail_url = detail_url(city.id)
+        self.client = APIClient()
+
+    def test_city_list_permission_denied(self) -> None:
+        response = self.client.get(CITY_URL)
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
+    def test_city_detail_permission_denied(self) -> None:
+        response = self.client.get(self.detail_url)
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
+    def test_city_create_permission_denied(self) -> None:
+        response = self.client.post(CITY_URL)
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
+    def test_city_update_permission_denied(self) -> None:
+        response = self.client.put(self.detail_url)
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
+    def test_city_delete_permission_denied(self) -> None:
+        response = self.client.delete(self.detail_url)
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
