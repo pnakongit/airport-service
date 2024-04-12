@@ -46,9 +46,14 @@ class UnAuthenticatedCountryApiTest(TestCase):
 class AuthenticatedCityApiTest(TestCase):
 
     def setUp(self) -> None:
+        user = get_user_model().objects.create_user(
+            email="user@user.com",
+            password="password1234",
+        )
         city = sample_city()
         self.detail_url = detail_url(city.id)
         self.client = APIClient()
+        self.client.force_authenticate(user=user)
 
     def test_city_list_permission_denied(self) -> None:
         response = self.client.get(CITY_URL)
