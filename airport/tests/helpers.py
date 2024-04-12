@@ -17,3 +17,14 @@ def sample_city(**params) -> City:
     }
     default_city_params.update(params)
     return City.objects.create(**default_city_params)
+
+
+def sample_airport(**params) -> Airport:
+    city = sample_city(**params)
+
+    default_airport_params = {
+        "name": "Test Airport Name",
+        "closest_big_city": city,
+    }
+    default_airport_params.update(params)
+    return Airport.objects.create(**default_airport_params)
