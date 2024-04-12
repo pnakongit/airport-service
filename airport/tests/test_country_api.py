@@ -36,11 +36,11 @@ class UnAuthenticatedCountryApiTest(TestCase):
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
 
     def test_country_update_auth_required(self) -> None:
-        response = self.client.post(detail_url(self.country.id))
+        response = self.client.put(detail_url(self.country.id))
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
 
     def test_country_delete_auth_required(self) -> None:
-        response = self.client.post(detail_url(self.country.id))
+        response = self.client.delete(detail_url(self.country.id))
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
 
 
