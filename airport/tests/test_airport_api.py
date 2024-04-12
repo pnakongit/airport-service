@@ -10,7 +10,7 @@ AIRPORT_URL = reverse("airport:airport-list")
 AIRPORT_DETAIL_VIEW_NAME = "airport:airport-detail"
 
 
-class UnAuthorizedAirportAPITest(TestCase):
+class UnAuthenticatedAirportAPITest(TestCase):
     def setUp(self) -> None:
         airport = sample_airport()
 
