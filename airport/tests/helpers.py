@@ -9,7 +9,7 @@ def detail_url(view_name: str, obj_id: id) -> str:
 
 def sample_city(**params) -> City:
     country, _ = Country.objects.get_or_create(
-       name="Test Sample Country Name"
+        name="Test Sample Country Name"
     )
     default_city_params = {
         "name": "Test Sample City Name",
@@ -20,7 +20,13 @@ def sample_city(**params) -> City:
 
 
 def sample_airport(**params) -> Airport:
-    city = sample_city(**params)
+    country , _ = Country.objects.get_or_create(
+        name="Test Sample Country Name"
+    )
+    city, _ = City.objects.get_or_create(
+        name="Test Sample City Name",
+        country=country
+    )
 
     default_airport_params = {
         "name": "Test Airport Name",
