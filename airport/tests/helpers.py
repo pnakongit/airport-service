@@ -1,6 +1,8 @@
 from django.urls import reverse
 
-from airport.models import City, Country, Airport
+from faker import Faker
+
+from airport.models import City, Country, Airport, Route
 
 
 def detail_url(view_name: str, obj_id: id) -> str:
@@ -20,7 +22,7 @@ def sample_city(**params) -> City:
 
 
 def sample_airport(**params) -> Airport:
-    country , _ = Country.objects.get_or_create(
+    country, _ = Country.objects.get_or_create(
         name="Test Sample Country Name"
     )
     city, _ = City.objects.get_or_create(
@@ -34,3 +36,17 @@ def sample_airport(**params) -> Airport:
     }
     default_airport_params.update(params)
     return Airport.objects.create(**default_airport_params)
+
+
+def sample_route(**params) -> Route:
+    fake = Faker()
+    source_airport = sample_airport(name=fake.word())
+    destination_airport = sample_airport(name=fake.word())
+
+    default_route_params = {
+        "source": source_airport,
+        "destination": destination_airport,
+        "distance": 30
+    }
+    default_route_params.update(params)
+    return Route.objects.create(**default_route_params)
