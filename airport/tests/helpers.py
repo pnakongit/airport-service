@@ -1,4 +1,10 @@
-from airport.models import City, Country
+from django.urls import reverse
+
+from airport.models import City, Country, Airport
+
+
+def detail_url(view_name: str, obj_id: id) -> str:
+    return reverse(view_name, args=[obj_id])
 
 
 def sample_city(**params) -> City:
