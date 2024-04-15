@@ -1,8 +1,10 @@
+from datetime import datetime
+
 from django.urls import reverse
 
 from faker import Faker
 
-from airport.models import City, Country, Airport, Route, Airplane, AirplaneType
+from airport.models import City, Country, Airport, Route, Airplane, AirplaneType, Flight
 
 
 def detail_url(view_name: str, obj_id: id) -> str:
@@ -64,3 +66,19 @@ def sample_airplane(**params) -> Airplane:
     }
     default_airplane_params.update(params)
     return Airplane.objects.create(**default_airplane_params)
+
+
+def sample_flight(**params) -> Flight:
+    route = params.pop("route", None)
+    if route is None:
+        route = sample_route()
+
+    default_flight_params = {
+        "route": route,
+        "airplane": None,
+        "departure_time": datetime(2024, 1, 1, 6),
+        "arrival_time": datetime(2024, 1, 1, 8),
+    }
+    default_flight_params.update(params)
+
+    return Flight.objects.create(**default_flight_params)
