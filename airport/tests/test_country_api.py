@@ -7,12 +7,10 @@ from rest_framework.test import APIClient
 
 from airport.models import Country
 from airport.serializers import CountrySerializer
+from airport.tests.helpers import detail_url
 
 COUNTRY_URL = reverse("airport:country-list")
-
-
-def detail_url(country_id: int) -> str:
-    return reverse("airport:country-detail", args=[country_id])
+COUNTRY_DETAIL_VIEW_NAME = "airport:country-detail"
 
 
 class UnAuthenticatedCountryApiTest(TestCase):
@@ -21,6 +19,10 @@ class UnAuthenticatedCountryApiTest(TestCase):
         self.country = Country.objects.create(
             name="Test Country"
         )
+        self.detail_url = detail_url(
+            COUNTRY_DETAIL_VIEW_NAME,
+            self.country.id,
+        )
         self.client = APIClient()
 
     def test_country_list_auth_required(self) -> None:
@@ -28,7 +30,7 @@ class UnAuthenticatedCountryApiTest(TestCase):
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
 
     def test_country_detail_auth_required(self) -> None:
-        response = self.client.get(detail_url(self.country.id))
+        response = self.client.get(self.detail_url)
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
 
     def test_country_create_auth_required(self) -> None:
@@ -36,11 +38,11 @@ class UnAuthenticatedCountryApiTest(TestCase):
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
 
     def test_country_update_auth_required(self) -> None:
-        response = self.client.put(detail_url(self.country.id))
+        response = self.client.put(self.detail_url)
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
 
     def test_country_delete_auth_required(self) -> None:
-        response = self.client.delete(detail_url(self.country.id))
+        response = self.client.delete(self.detail_url)
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
 
 
@@ -54,6 +56,10 @@ class AuthenticatedCountryApiTest(TestCase):
         self.country = Country.objects.create(
             name="Test Country"
         )
+        self.detail_url = detail_url(
+            COUNTRY_DETAIL_VIEW_NAME,
+            self.country.id,
+        )
         self.client = APIClient()
         self.client.force_authenticate(user=user)
 
@@ -66,15 +72,15 @@ class AuthenticatedCountryApiTest(TestCase):
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
     def test_country_detail_permission_denied(self) -> None:
-        response = self.client.get(detail_url(self.country.id))
+        response = self.client.get(self.detail_url)
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
     def test_country_update_permission_denied(self) -> None:
-        response = self.client.put(detail_url(self.country.id))
+        response = self.client.put(self.detail_url)
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
     def test_country_delete_permission_denied(self) -> None:
-        response = self.client.delete(detail_url(self.country.id))
+        response = self.client.delete(self.detail_url)
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
 
@@ -90,8 +96,10 @@ class IsAdminCountryApiTest(TestCase):
         self.country = Country.objects.create(
             name="Country detail"
         )
-        self.detail_url = detail_url(self.country.id)
-
+        self.detail_url = detail_url(
+            COUNTRY_DETAIL_VIEW_NAME,
+            self.country.id,
+        )
         self.client = APIClient()
         self.client.force_authenticate(user=admin_user)
 
