@@ -45,7 +45,7 @@ class UnAuthenticatedAirplaneTypeViewAPITest(TestCase):
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
 
 
-class AuthenticatedAirplaneTypeViewApiTests(TestCase):
+class AuthenticatedAirplaneTypeViewApiTest(TestCase):
     def setUp(self) -> None:
         user = get_user_model().objects.create_user(
             email="user@user.com",
