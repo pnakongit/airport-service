@@ -7,19 +7,19 @@ from rest_framework.test import APIClient
 
 from airport.models import City, Country
 from airport.serializers import CitySerializer, CityListDetailSerializer
-from airport.tests.helpers import sample_city
+from airport.tests.helpers import sample_city, detail_url
 
 CITY_URL = reverse("airport:city-list")
-
-
-def detail_url(city_id: int) -> str:
-    return reverse("airport:city-detail", args=[city_id])
+CITY_DETAIL_VIEW_NAME = "airport:city-detail"
 
 
 class UnAuthenticatedCountryApiTest(TestCase):
     def setUp(self) -> None:
         city = sample_city()
-        self.detail_url = detail_url(city.id)
+        self.detail_url = detail_url(
+            CITY_DETAIL_VIEW_NAME,
+            city.id
+        )
         self.client = APIClient()
 
     def test_city_list_auth_required(self) -> None:
@@ -51,7 +51,10 @@ class AuthenticatedCityApiTest(TestCase):
             password="password1234",
         )
         city = sample_city()
-        self.detail_url = detail_url(city.id)
+        self.detail_url = detail_url(
+            CITY_DETAIL_VIEW_NAME,
+            city.id
+        )
         self.client = APIClient()
         self.client.force_authenticate(user=user)
 
@@ -86,7 +89,10 @@ class AdminCityApiTest(TestCase):
         )
         admin_user.is_staff = True
         admin_user.save()
-        self.detail_url = detail_url(self.city.id)
+        self.detail_url = detail_url(
+            CITY_DETAIL_VIEW_NAME,
+            self.city.id
+        )
         self.client = APIClient()
         self.client.force_authenticate(user=admin_user)
 
