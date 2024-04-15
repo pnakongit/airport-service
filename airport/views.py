@@ -127,31 +127,26 @@ class CrewViewSet(viewsets.ModelViewSet):
 
 class FlightViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = Flight.objects.all()
-    serializer_class = FlightSerializer
+    serializer_class = FlightDetailSerializer
     filter_backends = [DjangoFilterBackend]
     filterset_class = FlightFilter
     permission_classes = (IsAuthenticated,)
 
     def get_serializer_class(self) -> Type[Serializer]:
-        if self.action == "retrieve":
-            return FlightDetailSerializer
-
         if self.action == "list":
             return FlightListSerializer
         return super().get_serializer_class()
 
     def get_queryset(self) -> QuerySet:
-        flight_qs = super().get_queryset()
-        if self.action in ["retrieve", "list"]:
-            flight_qs = flight_qs.select_related(
-                "airplane",
-                "route__source",
-                "route__destination"
-            ).prefetch_related(
-                "crews"
-            )
+        flight_qs = super().get_queryset().select_related(
+            "airplane",
+            "route__source",
+            "route__destination"
+        ).prefetch_related(
+            "crews"
+        )
         if self.action == "list":
-            flight_qs = flight_qs.annotate(
+            return flight_qs.annotate(
                 available_tickets=(
                                           F("airplane__rows") *
                                           F("airplane__seats_in_row")
