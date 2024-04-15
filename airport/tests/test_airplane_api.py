@@ -1,3 +1,7 @@
+import os
+import tempfile
+
+from PIL import Image
 from django.contrib.auth import get_user_model
 from django.test import TestCase
 from django.urls import reverse
@@ -10,6 +14,7 @@ from airport.tests.helpers import detail_url, sample_airplane
 
 AIRPLANE_URL = reverse("airport:airplane-list")
 AIRPLANE_DETAIL_VIEW_NAME = "airport:airplane-detail"
+IMAGE_UPLOAD_VIEW_NAME = "airport:airplane-upload_image"
 
 
 class UnAuthenticatedAirplaneViewAPITest(TestCase):
@@ -177,3 +182,76 @@ class AdminAirplaneViewApiTests(TestCase):
         self.assertFalse(
             Airplane.objects.filter(id=self.airplane.id).exists()
         )
+
+
+class UploadImageTest(TestCase):
+    def setUp(self) -> None:
+        self.user = get_user_model().objects.create_user(
+            email="user@user.com",
+            password="password123",
+        )
+        self.user.is_staff = True
+        self.user.save()
+        self.airplane = sample_airplane()
+        self.upload_url = detail_url(
+            IMAGE_UPLOAD_VIEW_NAME,
+            self.airplane.id
+        )
+        self.client = APIClient()
+        self.client.force_authenticate(user=self.user)
+
+    def test_upload_image_auth_required(self) -> None:
+        self.client.logout()
+        methods = [
+            self.client.get,
+            self.client.post,
+            self.client.put,
+            self.client.delete,
+        ]
+
+        for method in methods:
+            with self.subTest(method=method):
+                response = method(self.upload_url)
+                self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+
+    def test_upload_image_if_authenticated_user_permission_denied(self) -> None:
+        self.user.is_staff = False
+        self.user.save()
+        methods = [
+            self.client.get,
+            self.client.post,
+            self.client.put,
+            self.client.delete,
+        ]
+
+        for method in methods:
+            with self.subTest(method=method):
+                response = method(self.upload_url)
+                self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
+    def test_upload_image_get_put_delete_methods_not_allowed(self) -> None:
+
+        methods = [
+            self.client.get,
+            self.client.put,
+            self.client.delete,
+        ]
+
+        for method in methods:
+            with self.subTest(method=method):
+                response = method(self.upload_url)
+                self.assertEqual(response.status_code, status.HTTP_405_METHOD_NOT_ALLOWED)
+
+    def test_upload_image_add_image_to_airplane(self) -> None:
+
+        with tempfile.NamedTemporaryFile(suffix=".jpg") as ntf:
+            img = Image.new("RGB", (10, 10))
+            img.save(ntf, format="JPEG")
+            ntf.seek(0)
+            response = self.client.post(
+                self.upload_url, {"image": ntf}, format="multipart"
+            )
+
+        self.airplane.refresh_from_db()
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertTrue(os.path.exists(self.airplane.image.path))
