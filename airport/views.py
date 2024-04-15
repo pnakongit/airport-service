@@ -130,7 +130,7 @@ class FlightViewSet(viewsets.ReadOnlyModelViewSet):
     serializer_class = FlightSerializer
     filter_backends = [DjangoFilterBackend]
     filterset_class = FlightFilter
-    permission_classes = (IsAuthenticatedReadOnlyOrIsAdmin,)
+    permission_classes = (IsAuthenticated,)
 
     def get_serializer_class(self) -> Type[Serializer]:
         if self.action == "retrieve":
