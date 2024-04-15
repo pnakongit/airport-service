@@ -82,7 +82,7 @@ class AuthenticatedAirplaneTypeViewApiTest(TestCase):
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
 
-class AdminAirplaneTypeViewApiTests(TestCase):
+class AdminAirplaneTypeViewApiTest(TestCase):
     def setUp(self) -> None:
         admin_user = get_user_model().objects.create_user(
             email="admin_user@user.com",
