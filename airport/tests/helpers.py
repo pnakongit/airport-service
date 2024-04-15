@@ -2,7 +2,7 @@ from django.urls import reverse
 
 from faker import Faker
 
-from airport.models import City, Country, Airport, Route
+from airport.models import City, Country, Airport, Route, Airplane, AirplaneType
 
 
 def detail_url(view_name: str, obj_id: id) -> str:
@@ -50,3 +50,17 @@ def sample_route(**params) -> Route:
     }
     default_route_params.update(params)
     return Route.objects.create(**default_route_params)
+
+
+def sample_airplane(**params) -> Airplane:
+    airplane_type, _ = AirplaneType.objects.get_or_create(
+        name="Test Airplane Type Name"
+    )
+    default_airplane_params = {
+        "name": "Test Airplane Name",
+        "rows": 15,
+        "seats_in_row": 15,
+        "airplane_type": airplane_type,
+    }
+    default_airplane_params.update(params)
+    return Airplane.objects.create(**default_airplane_params)
