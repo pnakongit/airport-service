@@ -61,23 +61,23 @@ class AuthenticatedAirplaneTypeViewApiTests(TestCase):
         self.client = APIClient()
         self.client.force_authenticate(user=user)
 
-    def test_airplane_type_list_auth_required(self) -> None:
+    def test_airplane_type_list_permission_denied(self) -> None:
         response = self.client.get(AIRPLANE_TYPE_URL)
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
-    def test_airplane_type_detail_auth_required(self) -> None:
+    def test_airplane_type_detail_permission_denied(self) -> None:
         response = self.client.get(self.detail_url)
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
-    def test_airplane_type_create_auth_required(self) -> None:
+    def test_airplane_type_create_permission_denied(self) -> None:
         response = self.client.post(AIRPLANE_TYPE_URL)
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
-    def test_airplane_type_update_auth_required(self) -> None:
+    def test_airplane_type_update_permission_denied(self) -> None:
         response = self.client.put(self.detail_url)
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
-    def test_airplane_type_delete_auth_required(self) -> None:
+    def test_airplane_type_delete_permission_denied(self) -> None:
         response = self.client.delete(self.detail_url)
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
