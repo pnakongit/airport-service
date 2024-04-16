@@ -114,7 +114,7 @@ class Airplane(models.Model):
 
     @property
     def capacity(self) -> int:
-        return self.rows * self.seat_in_row
+        return self.rows * self.seats_in_row
 
 
 class Crew(models.Model):
