@@ -14,7 +14,7 @@ from airport.tests.helpers import detail_url, sample_airplane
 
 AIRPLANE_URL = reverse("airport:airplane-list")
 AIRPLANE_DETAIL_VIEW_NAME = "airport:airplane-detail"
-IMAGE_UPLOAD_VIEW_NAME = "airport:airplane-upload_image"
+IMAGE_UPLOAD_VIEW_NAME = "airport:airplane-upload-image"
 
 
 class UnAuthenticatedAirplaneViewAPITest(TestCase):
