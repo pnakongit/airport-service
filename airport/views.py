@@ -173,7 +173,7 @@ class AirplaneViewSet(viewsets.ModelViewSet):
         methods=["post"],
         detail=True,
         url_path="upload-image",
-        url_name="upload_image"
+        url_name="upload-image"
     )
     def upload_image(self, request: Request, pk: int = None) -> Response:
         """Endpoint for uploading image to specific airplane"""
