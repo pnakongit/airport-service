@@ -23,7 +23,7 @@ router.register("routes", RouteViewSet, basename="route")
 router.register("crews", CrewViewSet, basename="crew")
 router.register("flights", FlightViewSet, basename="flight")
 router.register("airplanes", AirplaneViewSet, basename="airplane")
-router.register("airplane-types", AirplaneTypeViewSet, basename="airplane_type")
+router.register("airplane-types", AirplaneTypeViewSet, basename="airplane-type")
 router.register("orders", OrderViewSet, basename="order")
 
 orders_router = nested_routers.NestedSimpleRouter(router, "orders", lookup="order")
