@@ -2,7 +2,7 @@ from typing import Type
 
 from django.db.models import QuerySet, F, Count, Q
 from django_filters.rest_framework import DjangoFilterBackend
-from rest_framework import viewsets, status
+from rest_framework import viewsets, status, mixins
 from rest_framework.decorators import action
 from rest_framework.generics import get_object_or_404
 from rest_framework.permissions import IsAuthenticated
@@ -184,14 +184,17 @@ class AirplaneViewSet(viewsets.ModelViewSet):
         return Response(serializer.data, status=status.HTTP_200_OK)
 
 
-class OrderViewSet(viewsets.ModelViewSet):
-    serializer_class = OrderSerializer
+class OrderViewSet(
+    mixins.ListModelMixin,
+    mixins.CreateModelMixin,
+    mixins.RetrieveModelMixin,
+    viewsets.GenericViewSet
+):
+    serializer_class = OrderListDetailSerializer
     queryset = Order.objects.all().prefetch_related("tickets", "user")
     permission_classes = (IsAuthenticated,)
 
     def get_serializer_class(self) -> Type[Serializer]:
-        if self.action in ["list", "retrieve"]:
-            return OrderListDetailSerializer
         if self.action == "create":
             return OrderCreateSerializer
         return super().get_serializer_class()
