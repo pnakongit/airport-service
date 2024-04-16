@@ -213,7 +213,7 @@ class Ticket(models.Model):
     ) -> None:
         attrs = (
             (row, "row", "rows"),
-            (seat, "seat", "seat_in_row")
+            (seat, "seat", "seats_in_row")
         )
         errors = {}
         for attr_value, attr_name, airplane_attr_name in attrs:
