@@ -114,7 +114,7 @@ class CrewViewSet(viewsets.ModelViewSet):
         methods=["get"],
         detail=True,
         url_path="flights",
-        url_name="flight_short_list"
+        url_name="flight-short-list"
     )
     def flight_short_list(self, request: Request, pk=None) -> Response:
         """Endpoint returns a list of flights for the specific crew"""
