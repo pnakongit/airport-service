@@ -6,12 +6,14 @@ from django.urls import reverse
 from rest_framework import status
 from rest_framework.test import APIClient
 
-from airport.models import Order
+from airport.models import Order, Ticket
 from airport.serializers import OrderListDetailSerializer
 from airport.tests.helpers import detail_url, sample_flight, sample_airplane
 
 ORDER_URL = reverse("airport:order-list")
 ORDER_DETAIL_VIEW_NAME = "airport:order-detail"
+TICKET_LIST_VIEW_NAME = "airport:order_ticket-list"
+TICKET_DETAIL_VIEW_NAME = "airport:order_ticket-detail"
 
 
 class UnAuthenticatedOrderAPITest(TestCase):
@@ -161,3 +163,46 @@ class AuthenticatedOrderApiTest(TestCase):
     def test_order_delete_method_not_allowed(self) -> None:
         response = self.client.delete(self.detail_url)
         self.assertEqual(response.status_code, status.HTTP_405_METHOD_NOT_ALLOWED)
+
+
+class UnAuthenticatedTicketNestedViewApiTests(TestCase):
+    def setUp(self) -> None:
+        user = get_user_model().objects.create_user(
+            email="user@user.com",
+            password="password123"
+        )
+        airplane = sample_airplane()
+        flight = sample_flight(airplane=airplane)
+        order = Order.objects.create(
+            user=user,
+        )
+        ticket = Ticket.objects.create(
+            seat=1,
+            row=1,
+            flight=flight,
+            order=order
+        )
+        self.list_url = reverse(
+            TICKET_LIST_VIEW_NAME,
+            kwargs={"order_pk": order.pk}
+        )
+        self.detail_url = reverse(
+            TICKET_DETAIL_VIEW_NAME,
+            kwargs={
+                "order_pk": order.pk,
+                "pk": ticket.pk
+            }
+        )
+        self.client = APIClient()
+
+    def test_ticket_list_auth_required(self) -> None:
+        response = self.client.get(self.list_url)
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+
+    def test_ticket_detail_auth_required(self) -> None:
+        response = self.client.get(self.detail_url)
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+
+    def test_ticket_create_auth_required(self) -> None:
+        response = self.client.post(self.list_url)
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
