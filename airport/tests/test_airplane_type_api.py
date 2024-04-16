@@ -8,8 +8,8 @@ from airport.models import AirplaneType
 from airport.serializers import AirplaneTypeSerializer
 from airport.tests.helpers import detail_url
 
-AIRPLANE_TYPE_URL = reverse("airport:airplane_type-list")
-AIRPLANE_TYPE_DETAIL_VIEW_NAME = "airport:airplane_type-detail"
+AIRPLANE_TYPE_URL = reverse("airport:airplane-type-list")
+AIRPLANE_TYPE_DETAIL_VIEW_NAME = "airport:airplane-type-detail"
 
 
 class UnAuthenticatedAirplaneTypeViewAPITest(TestCase):
