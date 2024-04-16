@@ -10,7 +10,7 @@ from airport.tests.helpers import detail_url, sample_flight
 
 CREW_URL = reverse("airport:crew-list")
 CREW_DETAIL_VIEW_NAME = "airport:crew-detail"
-FLIGHT_SHORT_LIST_URL_NAME = "airport:crew-flight_short_list"
+FLIGHT_SHORT_LIST_URL_NAME = "airport:crew-flight-short-list"
 
 
 class UnAuthenticatedCrewAPITest(TestCase):
