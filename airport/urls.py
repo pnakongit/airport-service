@@ -27,7 +27,7 @@ router.register("airplane-types", AirplaneTypeViewSet, basename="airplane-type")
 router.register("orders", OrderViewSet, basename="order")
 
 orders_router = nested_routers.NestedSimpleRouter(router, "orders", lookup="order")
-orders_router.register("tickets", TicketNestedViewSet, basename="order_ticket")
+orders_router.register("tickets", TicketNestedViewSet, basename="order-ticket")
 
 urlpatterns = [
     path("", include(router.urls)),
