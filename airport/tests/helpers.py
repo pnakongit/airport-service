@@ -42,8 +42,8 @@ def sample_airport(**params) -> Airport:
 
 def sample_route(**params) -> Route:
     fake = Faker()
-    source_airport = sample_airport(name=fake.word())
-    destination_airport = sample_airport(name=fake.word())
+    source_airport = sample_airport(name=fake.unique.word())
+    destination_airport = sample_airport(name=fake.unique.word())
 
     default_route_params = {
         "source": source_airport,
