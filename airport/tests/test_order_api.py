@@ -12,8 +12,8 @@ from airport.tests.helpers import detail_url, sample_flight, sample_airplane
 
 ORDER_URL = reverse("airport:order-list")
 ORDER_DETAIL_VIEW_NAME = "airport:order-detail"
-TICKET_LIST_VIEW_NAME = "airport:order_ticket-list"
-TICKET_DETAIL_VIEW_NAME = "airport:order_ticket-detail"
+TICKET_LIST_VIEW_NAME = "airport:order-ticket-list"
+TICKET_DETAIL_VIEW_NAME = "airport:order-ticket-detail"
 
 
 class UnAuthenticatedOrderAPITest(TestCase):
