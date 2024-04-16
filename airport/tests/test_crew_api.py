@@ -5,11 +5,12 @@ from rest_framework import status
 from rest_framework.test import APIClient
 
 from airport.models import Crew
-from airport.serializers import CrewSerializer
-from airport.tests.helpers import detail_url
+from airport.serializers import CrewSerializer, FlightShortListSerializer
+from airport.tests.helpers import detail_url, sample_flight
 
 CREW_URL = reverse("airport:crew-list")
 CREW_DETAIL_VIEW_NAME = "airport:crew-detail"
+FLIGHT_SHORT_LIST_URL_NAME = "airport:crew-flight_short_list"
 
 
 class UnAuthenticatedCrewAPITest(TestCase):
@@ -186,3 +187,84 @@ class AdminCrewApiTest(TestCase):
         self.assertFalse(
             Crew.objects.filter(id=self.crew.id).exists()
         )
+
+
+class FlightShortListTest(TestCase):
+    def setUp(self) -> None:
+        self.user = get_user_model().objects.create_user(
+            email="user@user.com",
+            password="password123",
+        )
+        self.user.is_staff = True
+        self.user.save()
+        self.crew = Crew.objects.create(
+            first_name="Test first name 1",
+            last_name="Test last name 1",
+        )
+        self.flight_short_list = detail_url(
+            FLIGHT_SHORT_LIST_URL_NAME,
+            self.crew.id
+        )
+        self.client = APIClient()
+        self.client.force_authenticate(user=self.user)
+
+    def test_flight_short_list_auth_required(self) -> None:
+        self.client.logout()
+        methods = [
+            self.client.get,
+            self.client.post,
+            self.client.put,
+            self.client.delete,
+        ]
+
+        for method in methods:
+            with self.subTest(method=method):
+                response = method(self.flight_short_list)
+                self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+
+    def test_flight_short_list_if_authenticated_user_permission_denied(self) -> None:
+        self.user.is_staff = False
+        self.user.save()
+        methods = [
+            self.client.get,
+            self.client.post,
+            self.client.put,
+            self.client.delete,
+        ]
+
+        for method in methods:
+            with self.subTest(method=method):
+                response = method(self.flight_short_list)
+                self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
+    def test_flight_short_list_post_put_delete_methods_not_allowed(self) -> None:
+
+        methods = [
+            self.client.post,
+            self.client.put,
+            self.client.delete,
+        ]
+
+        for method in methods:
+            with self.subTest(method=method):
+                response = method(self.flight_short_list)
+                self.assertEqual(response.status_code, status.HTTP_405_METHOD_NOT_ALLOWED)
+
+    def test_flight_short_list(self) -> None:
+        first_crew = self.crew
+        second_crew = Crew.objects.create()
+
+        first_flight = sample_flight()
+        first_flight.crews.add(first_crew)
+        second_flight = sample_flight()
+        second_flight.crews.add(first_crew)
+        third_flight = sample_flight()
+        third_flight.crews.add(second_crew)
+
+        response = self.client.get(self.flight_short_list)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+        flight_qs = first_crew.flights.all()
+        serializer = FlightShortListSerializer(flight_qs, many=True)
+
+        self.assertEqual(response.data, serializer.data)
