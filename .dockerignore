@@ -1,0 +1,15 @@
+#Folders:
+__pycache__/
+media/
+venv/
+
+#Fiels:
+*.log
+*.pot
+.dockerignore
+.env
+.gitignore
+docker-compose.yml
+Dockerfile
+README.md
+db.sqlite3
