@@ -126,7 +126,7 @@ class CrewViewSet(viewsets.ModelViewSet):
 
 
 class FlightViewSet(viewsets.ReadOnlyModelViewSet):
-    queryset = Flight.objects.all()
+    queryset = Flight.objects.all().order_by("-departure_time", "id")
     serializer_class = FlightDetailSerializer
     filter_backends = [DjangoFilterBackend]
     filterset_class = FlightFilter
