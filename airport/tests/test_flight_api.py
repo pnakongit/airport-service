@@ -69,7 +69,7 @@ class AuthenticatedFlightApiTest(TestCase):
                                       F("airplane__rows") *
                                       F("airplane__seats_in_row")
                               ) - Count("tickets")
-        )
+        ).order_by("-departure_time", "id")
         serializer = FlightListSerializer(flight_qs, many=True)
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
@@ -87,7 +87,7 @@ class AuthenticatedFlightApiTest(TestCase):
                                       F("airplane__rows") *
                                       F("airplane__seats_in_row")
                               ) - Count("tickets")
-        )
+        ).order_by("-departure_time", "id")
         first_page = flight_qs[:page_size]
         second_page = flight_qs[page_size:]
 
@@ -116,16 +116,23 @@ class AuthenticatedFlightApiTest(TestCase):
             arrival_time=current_datetime + timedelta(days=1, hours=2),
         )
 
-        flight_qs = Flight.objects.annotate(
-            available_tickets=(
-                                      F("airplane__rows") *
-                                      F("airplane__seats_in_row")
-                              ) - Count("tickets")
-        ).filter(departure_time__date__gte=current_datetime.date())
-
+        flight_qs = (
+            Flight.objects
+            .annotate(
+                available_tickets=(
+                                          F("airplane__rows") *
+                                          F("airplane__seats_in_row")
+                                  ) - Count("tickets")
+            )
+            .order_by("-departure_time", "id")
+            .filter(
+                departure_time__date__gte=current_datetime.date()
+            )
+        )
         response = self.client.get(
             FLIGHT_URL + f"?start_departure_date={current_datetime.date()}"
         )
+
         serializer = FlightListSerializer(flight_qs, many=True)
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
@@ -146,12 +153,17 @@ class AuthenticatedFlightApiTest(TestCase):
             arrival_time=current_datetime + timedelta(days=1, hours=2),
         )
 
-        flight_qs = Flight.objects.annotate(
-            available_tickets=(
-                                      F("airplane__rows") *
-                                      F("airplane__seats_in_row")
-                              ) - Count("tickets")
-        ).filter(departure_time__date__lte=current_datetime.date())
+        flight_qs = (
+            Flight.objects
+            .annotate(
+                available_tickets=(
+                                          F("airplane__rows") *
+                                          F("airplane__seats_in_row")
+                                  ) - Count("tickets")
+            )
+            .filter(departure_time__date__lte=current_datetime.date())
+            .order_by("-departure_time", "id")
+        )
 
         response = self.client.get(
             FLIGHT_URL + f"?end_departure_date={current_datetime.date()}"
@@ -176,12 +188,17 @@ class AuthenticatedFlightApiTest(TestCase):
             arrival_time=current_datetime + timedelta(days=1, hours=1),
         )
 
-        flight_qs = Flight.objects.annotate(
-            available_tickets=(
-                                      F("airplane__rows") *
-                                      F("airplane__seats_in_row")
-                              ) - Count("tickets")
-        ).filter(arrival_time__date__gte=current_datetime.date())
+        flight_qs = (
+            Flight.objects
+            .annotate(
+                available_tickets=(
+                                          F("airplane__rows") *
+                                          F("airplane__seats_in_row")
+                                  ) - Count("tickets")
+            )
+            .filter(arrival_time__date__gte=current_datetime.date())
+            .order_by("-departure_time", "id")
+        )
 
         response = self.client.get(
             FLIGHT_URL + f"?start_arrival_date={current_datetime.date()}"
@@ -206,12 +223,17 @@ class AuthenticatedFlightApiTest(TestCase):
             arrival_time=current_datetime + timedelta(days=1, hours=1),
         )
 
-        flight_qs = Flight.objects.annotate(
-            available_tickets=(
-                                      F("airplane__rows") *
-                                      F("airplane__seats_in_row")
-                              ) - Count("tickets")
-        ).filter(arrival_time__date__lte=current_datetime.date())
+        flight_qs = (
+            Flight.objects
+            .annotate(
+                available_tickets=(
+                                          F("airplane__rows") *
+                                          F("airplane__seats_in_row")
+                                  ) - Count("tickets")
+            )
+            .filter(arrival_time__date__lte=current_datetime.date())
+            .order_by("-departure_time", "id")
+        )
 
         response = self.client.get(
             FLIGHT_URL + f"?end_arrival_date={current_datetime.date()}"
@@ -234,12 +256,17 @@ class AuthenticatedFlightApiTest(TestCase):
         sample_flight(route=second_route)
         sample_flight(route=third_route)
 
-        flight_qs = Flight.objects.annotate(
-            available_tickets=(
-                                      F("airplane__rows") *
-                                      F("airplane__seats_in_row")
-                              ) - Count("tickets")
-        ).filter(route__source__name__iexact=first_airport.name)
+        flight_qs = (
+            Flight.objects
+            .annotate(
+                available_tickets=(
+                                          F("airplane__rows") *
+                                          F("airplane__seats_in_row")
+                                  ) - Count("tickets")
+            )
+            .filter(route__source__name__iexact=first_airport.name)
+            .order_by("-departure_time", "id")
+        )
 
         response = self.client.get(
             FLIGHT_URL + f"?source={first_airport.name}"
@@ -262,12 +289,17 @@ class AuthenticatedFlightApiTest(TestCase):
         sample_flight(route=second_route)
         sample_flight(route=third_route)
 
-        flight_qs = Flight.objects.annotate(
-            available_tickets=(
-                                      F("airplane__rows") *
-                                      F("airplane__seats_in_row")
-                              ) - Count("tickets")
-        ).filter(route__destination__name__iexact=first_airport.name)
+        flight_qs = (
+            Flight.objects
+            .annotate(
+                available_tickets=(
+                                          F("airplane__rows") *
+                                          F("airplane__seats_in_row")
+                                  ) - Count("tickets")
+            )
+            .filter(route__destination__name__iexact=first_airport.name)
+            .order_by("-departure_time", "id")
+        )
 
         response = self.client.get(
             FLIGHT_URL + f"?destination={first_airport.name}"
